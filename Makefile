@@ -33,6 +33,15 @@ docker-env:
 		--build-arg ostype=${shell uname} \
 		--tag rust-build-remarkable:latest .
 
+docker-build:
+	docker run --rm -it \
+	    -v "$(shell pwd)":/app \
+	    -v ~/.cargo/registry:/usr/local/cargo/registry \
+	    -w /app \
+	    rust-build-remarkable \
+	    cargo build --target armv7-unknown-linux-musleabihf --release
+
+
 examples-docker: docker-env
 	docker volume create cargo-registry
 	docker run \

@@ -551,6 +551,14 @@ impl<'a> ApplicationContext<'a> {
         }
     }
 
+    pub fn remove_active_regions(&mut self) {
+        let mut regions = self.active_regions.clone();
+        let ids = self.active_regions.iter().map(|e| *e.0);
+        for id in ids {
+            regions.remove(id);
+        }
+    }
+
     pub fn create_active_region(
         &mut self,
         y: u16,
