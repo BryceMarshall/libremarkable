@@ -552,10 +552,10 @@ impl<'a> ApplicationContext<'a> {
     }
 
     pub fn remove_active_regions(&mut self) {
-        let mut regions = self.active_regions.clone();
-        let ids = self.active_regions.iter().map(|e| *e.0);
+        let ids : Vec<ItemId> = self.active_regions.iter().map(|e| *e.0).collect();
+        let ids = ids.clone();
         for id in ids {
-            regions.remove(id);
+            self.active_regions.remove(id);
         }
     }
 
