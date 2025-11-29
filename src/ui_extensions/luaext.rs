@@ -103,6 +103,7 @@ pub fn lua_draw_text(
             color::GRAY(ncolor as u8),
             false,
         );
+        println!("{:?}", rect);
         hlua::AnyLuaValue::LuaArray(vec![
             (hlua::AnyLuaValue::LuaString("top".to_string()), hlua::AnyLuaValue::LuaNumber(rect.top as f64)),
             (hlua::AnyLuaValue::LuaString("left".to_string()), hlua::AnyLuaValue::LuaNumber(rect.left as f64)),
