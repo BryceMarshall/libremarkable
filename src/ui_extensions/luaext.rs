@@ -81,7 +81,7 @@ pub fn lua_draw_text(
     text: hlua::AnyLuaValue,
     size: hlua::AnyLuaValue,
     color: hlua::AnyLuaValue,
-) {
+) -> Option<mxcfb_rect> {
     if let (
         hlua::AnyLuaValue::LuaNumber(ny),
         hlua::AnyLuaValue::LuaNumber(nx),
@@ -93,7 +93,7 @@ pub fn lua_draw_text(
         let framebuffer = get_current_framebuffer!();
         // TODO: Expose the drawn region to Lua so that it can be updated that's
         // returned from this draw_text function.
-        framebuffer.draw_text(
+        Some(framebuffer.draw_text(
             cgmath::Point2 {
                 x: nx as f32,
                 y: ny as f32,
@@ -102,8 +102,8 @@ pub fn lua_draw_text(
             nsize as f32,
             color::GRAY(ncolor as u8),
             false,
-        );
-    };
+        ))
+    } else { None }
 }
 
 pub fn lua_set_pixel(y: hlua::AnyLuaValue, x: hlua::AnyLuaValue, color: hlua::AnyLuaValue) {
