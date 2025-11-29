@@ -81,6 +81,7 @@ pub fn lua_draw_text(
     text: hlua::AnyLuaValue,
     size: hlua::AnyLuaValue,
     color: hlua::AnyLuaValue,
+    refresh: hlua::AnyLuaValue,
 ) -> hlua::AnyLuaValue {
     if let (
         hlua::AnyLuaValue::LuaNumber(ny),
@@ -88,7 +89,8 @@ pub fn lua_draw_text(
         hlua::AnyLuaValue::LuaString(stext),
         hlua::AnyLuaValue::LuaNumber(nsize),
         hlua::AnyLuaValue::LuaNumber(ncolor),
-    ) = (y, x, text, size, color)
+        hlua::AnyLuaValue::LuaBoolean(refresh),
+    ) = (y, x, text, size, color, refresh)
     {
         let framebuffer = get_current_framebuffer!();
         // TODO: Expose the drawn region to Lua so that it can be updated that's
@@ -103,7 +105,17 @@ pub fn lua_draw_text(
             color::GRAY(ncolor as u8),
             false,
         );
-        println!("{:?}", rect);
+        if refresh {
+            framebuffer.partial_refresh(
+                &rect,
+                PartialRefreshMode::Wait,
+                waveform_mode::WAVEFORM_MODE_DU,
+                display_temp::TEMP_USE_REMARKABLE_DRAW,
+                dither_mode::EPDC_FLAG_EXP1,
+                DRAWING_QUANT_BIT,
+                false,
+            );
+        }
         hlua::AnyLuaValue::LuaArray(vec![
             (hlua::AnyLuaValue::LuaString("top".to_string()), hlua::AnyLuaValue::LuaNumber(rect.top as f64)),
             (hlua::AnyLuaValue::LuaString("left".to_string()), hlua::AnyLuaValue::LuaNumber(rect.left as f64)),

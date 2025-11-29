@@ -109,7 +109,7 @@ impl Default for ApplicationContext<'static> {
             nms.set("refresh", hlua::function6(luaext::lua_refresh));
 
             // Draws text with rusttype
-            nms.set("draw_text", hlua::function5(luaext::lua_draw_text));
+            nms.set("draw_text", hlua::function6(luaext::lua_draw_text));
 
             // Sets the pixel to the u8 color value, does no refresh. Refresh done explicitly via calling `refresh`
             nms.set("set_pixel", hlua::function3(luaext::lua_set_pixel));
