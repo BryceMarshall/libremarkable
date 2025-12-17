@@ -40,7 +40,7 @@ hlua = { git = "https://github.com/fenollp/hlua.git", rev = "f327e79", optional 
 stopwatch = { version = "0.0.7", optional = true }
 
 [features]
-default = ["scan", "framebuffer-types", "framebuffer", "framebuffer-storage", "framebuffer-drawing", "image", "framebuffer-text-drawing", "input-types", "input", "battery", "appctx", "hlua"]
+default = ["scan", "framebuffer-types", "framebuffer", "framebuffer-storage", "framebuffer-drawing", "image", "framebuffer-text-drawing", "input-types", "input", "battery", "appctx"]
 
 scan = ["evdev"]
 framebuffer-types = ["ioctl-gen"]
@@ -48,6 +48,10 @@ framebuffer = ["scan", "framebuffer-types", "memmap2"]
 framebuffer-storage = ["framebuffer", "zstd"]
 framebuffer-drawing = ["framebuffer", "line_drawing"]
 framebuffer-text-drawing = ["framebuffer-drawing", "rusttype"]
+
+# v1.1 State management features
+framebuffer-dirty-tracking = ["framebuffer"]
+
 input-types = []
 input = ["scan", "input-types", "evdev", "epoll", "fxhash"]
 battery = []

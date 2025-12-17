@@ -13,6 +13,7 @@ use crate::framebuffer::common::{
     FBIOGET_FSCREENINFO, FBIOGET_VSCREENINFO, FBIOPUT_VSCREENINFO, MXCFB_DISABLE_EPDC_ACCESS,
     MXCFB_ENABLE_EPDC_ACCESS, MXCFB_SET_AUTO_UPDATE_MODE, MXCFB_SET_UPDATE_SCHEME,
 };
+use crate::framebuffer::dirty_tracking::DirtyRegionTracker;
 use crate::framebuffer::screeninfo::{FixScreeninfo, VarScreeninfo};
 use crate::framebuffer::swtfb_client::SwtfbClient;
 use crate::framebuffer::FramebufferBase;
@@ -33,6 +34,11 @@ pub struct Framebuffer {
     pub var_screen_info: VarScreeninfo,
     pub fix_screen_info: FixScreeninfo,
     pub framebuffer_update: FramebufferUpdate,
+    /// Dirty region tracker for automatic refresh optimization (v1.1)
+    ///
+    /// Tracks modified regions when the `framebuffer-dirty-tracking` feature
+    /// is enabled. When disabled, this is a zero-sized type with no overhead.
+    dirty_tracker: DirtyRegionTracker,
 }
 
 unsafe impl Send for Framebuffer {}
@@ -140,7 +146,52 @@ impl Framebuffer {
             var_screen_info,
             fix_screen_info,
             framebuffer_update,
+            dirty_tracker: DirtyRegionTracker::new(),
         }
+    }
+
+    /// Get an immutable reference to the dirty region tracker
+    ///
+    /// The dirty tracker automatically accumulates regions when draw operations
+    /// are performed (if the `framebuffer-dirty-tracking` feature is enabled).
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # use libremarkable::framebuffer::core::Framebuffer;
+    /// # use libremarkable::framebuffer::FramebufferDraw;
+    /// # use libremarkable::framebuffer::common::color;
+    /// # use cgmath::Point2;
+    /// let mut fb = Framebuffer::new();
+    /// fb.draw_line(Point2::new(0, 0), Point2::new(100, 100), 2, color::BLACK);
+    ///
+    /// // Check if any drawing occurred
+    /// if fb.dirty_tracker().is_dirty() {
+    ///     if let Some(region) = fb.dirty_tracker().get_merged() {
+    ///         println!("Dirty region: {:?}", region);
+    ///     }
+    /// }
+    /// ```
+    #[inline]
+    pub fn dirty_tracker(&self) -> &DirtyRegionTracker {
+        &self.dirty_tracker
+    }
+
+    /// Get a mutable reference to the dirty region tracker
+    ///
+    /// This allows clearing or optimizing tracked regions.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # use libremarkable::framebuffer::core::Framebuffer;
+    /// let mut fb = Framebuffer::new();
+    /// // ... perform some drawing ...
+    /// fb.dirty_tracker_mut().clear(); // Reset tracking
+    /// ```
+    #[inline]
+    pub fn dirty_tracker_mut(&mut self) -> &mut DirtyRegionTracker {
+        &mut self.dirty_tracker
     }
 }
 

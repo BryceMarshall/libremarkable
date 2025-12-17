@@ -6,6 +6,9 @@ pub mod screeninfo;
 pub mod error;
 pub mod coords;
 
+// v1.1.0 API modules
+pub mod dirty_tracking;
+
 #[cfg(feature = "framebuffer-storage")]
 pub mod storage;
 
@@ -26,6 +29,7 @@ pub use error::FramebufferError;
 // Users can access it as framebuffer::error::Result<T> if needed
 pub use coords::{ToDrawCoords, ToRegionCoords, ToDrawVector, ToRegionVector};
 pub use common::RefreshQuality;
+pub use dirty_tracking::DirtyRegionTracker;
 
 #[cfg(feature = "framebuffer")]
 pub use refresh_builder::{RefreshBuilder, FramebufferRefreshExt};

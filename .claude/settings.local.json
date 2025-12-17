@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./target)",
+      "Read(./.git)",
+      "Read(./.github)",
+      "Read(./.idea)"
+    ],
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(grep:*)"
+    ]
+  }
+}
