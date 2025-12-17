@@ -415,3 +415,115 @@ pub enum display_temp {
     /// High draw latency again
     TEMP_USE_MAX = 0xFFFF,
 }
+
+/// High-level refresh quality presets that abstract hardware parameters
+///
+/// These presets provide semantic names for common refresh configurations,
+/// hiding the underlying hardware details (waveform modes, temperature,
+/// dithering, quantization) behind user-friendly quality levels.
+///
+/// # Examples
+///
+/// ```
+/// use libremarkable::framebuffer::common::RefreshQuality;
+///
+/// // Use semantic quality levels instead of hardware parameters
+/// let quality = RefreshQuality::Fast;  // For drawing/animation
+/// let quality = RefreshQuality::Balanced;  // For UI updates
+/// let quality = RefreshQuality::High;  // For images
+/// ```
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum RefreshQuality {
+    /// Fastest refresh, suitable for high-frequency updates like drawing
+    ///
+    /// Uses DU (Direct Update) waveform mode with minimal dithering.
+    /// Only supports grayscale (black/white), but provides the lowest latency.
+    ///
+    /// **Use cases**: Drawing, writing, animation, real-time updates
+    ///
+    /// **Trade-offs**: May leave ghosting, no grayscale support
+    Fast,
+
+    /// Balanced quality and speed, suitable for UI updates
+    ///
+    /// Uses GC16_FAST waveform mode with moderate dithering.
+    /// Provides good quality with acceptable speed for most use cases.
+    ///
+    /// **Use cases**: UI elements, text rendering, general-purpose updates
+    ///
+    /// **Trade-offs**: Slight ghosting acceptable, good balance of speed/quality
+    Balanced,
+
+    /// Highest quality, suitable for final rendering
+    ///
+    /// Uses GC16 waveform mode with full dithering.
+    /// Provides the cleanest image quality but takes longer to refresh.
+    ///
+    /// **Use cases**: Images, photos, static final content
+    ///
+    /// **Trade-offs**: Slower refresh, may flash, but cleanest result
+    High,
+
+    /// Full screen initialization and clearing ghosting
+    ///
+    /// Uses INIT waveform mode which performs a full screen flash.
+    /// Completely clears ghosting artifacts and resets the screen.
+    ///
+    /// **Use cases**: Screen initialization, clearing accumulated ghosting
+    ///
+    /// **Trade-offs**: Slowest, causes visible flash, but completely clears screen
+    Clear,
+}
+
+impl RefreshQuality {
+    /// Maps quality level to hardware parameters
+    ///
+    /// Returns tuple of (waveform_mode, display_temp, dither_mode, quant_bit)
+    /// based on common usage patterns observed in demo applications.
+    ///
+    /// This mapping is based on empirical testing and typical use cases:
+    /// - Fast: DU mode with drawing quantization (from stylus drawing path)
+    /// - Balanced: GC16_FAST with drawing dithering (from UI refresh path)
+    /// - High: GC16 with full dithering (for quality rendering)
+    /// - Clear: INIT mode for screen reset
+    pub(crate) fn to_hardware_params(self) -> (waveform_mode, display_temp, dither_mode, i32) {
+        match self {
+            RefreshQuality::Fast => (
+                waveform_mode::WAVEFORM_MODE_DU,
+                display_temp::TEMP_USE_REMARKABLE_DRAW,
+                dither_mode::EPDC_FLAG_USE_DITHERING_PASSTHROUGH,
+                DRAWING_QUANT_BIT,
+            ),
+            RefreshQuality::Balanced => (
+                waveform_mode::WAVEFORM_MODE_GC16_FAST,
+                display_temp::TEMP_USE_REMARKABLE_DRAW,
+                dither_mode::EPDC_FLAG_USE_DITHERING_DRAWING,
+                0,
+            ),
+            RefreshQuality::High => (
+                waveform_mode::WAVEFORM_MODE_GC16,
+                display_temp::TEMP_USE_REMARKABLE_DRAW,
+                dither_mode::EPDC_FLAG_USE_REMARKABLE_DITHER,
+                0,
+            ),
+            RefreshQuality::Clear => (
+                waveform_mode::WAVEFORM_MODE_INIT,
+                display_temp::TEMP_USE_REMARKABLE_DRAW,
+                dither_mode::EPDC_FLAG_USE_DITHERING_PASSTHROUGH,
+                0,
+            ),
+        }
+    }
+
+    /// Returns a human-readable description of this quality level
+    ///
+    /// Useful for displaying quality options in UI or debugging.
+    pub fn description(self) -> &'static str {
+        match self {
+            RefreshQuality::Fast => "Fast grayscale updates for drawing/animation",
+            RefreshQuality::Balanced => "Balanced quality for UI and text",
+            RefreshQuality::High => "High quality for final rendering",
+            RefreshQuality::Clear => "Full screen clear and initialization",
+        }
+    }
+}
