@@ -14,6 +14,47 @@ For further documentation see the [wiki](https://github.com/canselcik/libremarka
 
 `https://github.com/canselcik/RemarkableFramebuffer` redirects to this repository for historical purposes.
 
+### Quick Start (v1.0 API)
+
+**Version 1.0** introduces a simplified, ergonomic API while maintaining full backwards compatibility:
+
+```rust
+use libremarkable::framebuffer::{
+    core::Framebuffer,
+    FramebufferRefreshExt,  // Extension trait for new API
+    FramebufferDraw,
+    common::{mxcfb_rect, color},
+};
+
+fn main() {
+    let mut framebuffer = Framebuffer::new();
+
+    // Draw a circle
+    let rect = framebuffer.fill_circle((100, 100).into(), 50, color::BLACK);
+
+    // NEW: Simple refresh API (replaces 7-parameter refresh calls)
+    framebuffer.refresh_fast(&rect);           // Fast grayscale update
+    framebuffer.refresh_balanced(&rect);       // Balanced quality
+    framebuffer.refresh_quality(&rect);        // Highest quality
+
+    // Or use the builder for fine-grained control
+    framebuffer.refresh()
+        .region(&rect)
+        .quality(RefreshQuality::Fast)
+        .wait()  // Block until complete
+        .send();
+}
+```
+
+**Key improvements in v1.0:**
+- **Simplified refresh API**: `refresh_fast()`, `refresh_balanced()`, `refresh_quality()` replace verbose 7-parameter calls
+- **Quality presets**: `RefreshQuality::{Fast, Balanced, High, Clear}` hide hardware waveform modes
+- **Builder pattern**: Fluent API for customization when needed
+- **Better error handling**: Proper `FramebufferError` type with context
+- **Coordinate helpers**: Safe type conversions with `ToDrawCoords` and `ToRegionCoords` traits
+
+**Backwards compatibility:** The original API remains fully functional. Both old and new APIs can be used in the same codebase.
+
 ### Build Instructions
 
 #### Setting up the toolchain

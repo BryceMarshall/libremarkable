@@ -7,13 +7,12 @@
 //! elements or interactivity other than the pen.
 //!
 //! The new event loop design makes this type of application very easy to make.
+//!
+//! This example demonstrates the v1.0 simplified refresh API.
 
 use libremarkable::appctx::ApplicationContext;
-use libremarkable::framebuffer::common::{
-    color, display_temp, dither_mode, waveform_mode, DRAWING_QUANT_BIT,
-};
-use libremarkable::framebuffer::PartialRefreshMode;
-use libremarkable::framebuffer::{FramebufferDraw, FramebufferRefresh};
+use libremarkable::framebuffer::common::color;
+use libremarkable::framebuffer::{FramebufferDraw, FramebufferRefreshExt};
 use libremarkable::input::{InputEvent, WacomEvent, WacomPen};
 
 fn main() {
@@ -70,18 +69,10 @@ fn main() {
                         radcolor.1,
                     );
 
-                    fb.partial_refresh(
-                        &region,
-                        PartialRefreshMode::Async,
-                        // DU mode only supports black and white colors.
-                        // See the documentation of the different waveform modes
-                        // for more information
-                        waveform_mode::WAVEFORM_MODE_DU,
-                        display_temp::TEMP_USE_REMARKABLE_DRAW,
-                        dither_mode::EPDC_FLAG_EXP1,
-                        DRAWING_QUANT_BIT,
-                        false,
-                    );
+                    // NEW v1.0 API: Simple refresh using quality presets
+                    // This replaces the verbose 7-parameter partial_refresh call
+                    // refresh_fast() uses DU waveform mode optimized for drawing
+                    fb.refresh_fast(&region);
                 }
 
                 _ => {}

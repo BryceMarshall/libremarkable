@@ -46,12 +46,11 @@ examples-docker: docker-env
 	docker volume create cargo-registry
 	docker run \
 		--rm \
-		--user builder \
 		-v $(shell pwd):/home/builder/libremarkable:rw \
 		-v cargo-registry:/home/builder/.cargo/registry \
 		-w /home/builder/libremarkable \
 		rust-build-remarkable:latest \
-		cargo build --examples --release --target=armv7-unknown-linux-gnueabihf
+		cargo build --examples --release --target=armv7-unknown-linux-musleabihf
 
 library:
 	cargo build --release --target=armv7-unknown-linux-gnueabihf

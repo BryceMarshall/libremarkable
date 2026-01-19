@@ -29,12 +29,14 @@ impl framebuffer::FramebufferDraw for core::Framebuffer {
                 color::RGB(pixel.0[0], pixel.0[1], pixel.0[2]),
             );
         }
-        mxcfb_rect {
+        let rect = mxcfb_rect {
             top: pos.y as u32,
             left: pos.x as u32,
             width: img.width(),
             height: img.height(),
-        }
+        };
+        self.dirty_tracker_mut().mark_dirty(rect);
+        rect
     }
 
     fn draw_line(
@@ -56,7 +58,9 @@ impl framebuffer::FramebufferDraw for core::Framebuffer {
             ),
         };
         let margin = (width + 1) / 2;
-        graphics::stamp_along_line(stamp, start, end).expand(margin)
+        let rect = graphics::stamp_along_line(stamp, start, end).expand(margin);
+        self.dirty_tracker_mut().mark_dirty(rect);
+        rect
     }
 
     fn draw_polygon(&mut self, points: &[cgmath::Point2<i32>], fill: bool, c: color) -> mxcfb_rect {
@@ -78,12 +82,14 @@ impl framebuffer::FramebufferDraw for core::Framebuffer {
         for (x, y) in line_drawing::BresenhamCircle::new(pos.x, pos.y, rad as i32) {
             self.write_pixel(Point2 { x, y }, v);
         }
-        mxcfb_rect {
+        let rect = mxcfb_rect {
             top: pos.y as u32 - rad,
             left: pos.x as u32 - rad,
             width: 2 * rad,
             height: 2 * rad,
-        }
+        };
+        self.dirty_tracker_mut().mark_dirty(rect);
+        rect
     }
 
     fn fill_circle(&mut self, pos: cgmath::Point2<i32>, rad: u32, v: color) -> mxcfb_rect {
@@ -98,12 +104,14 @@ impl framebuffer::FramebufferDraw for core::Framebuffer {
                 }
             }
         }
-        mxcfb_rect {
+        let rect = mxcfb_rect {
             top: pos.y as u32 - rad,
             left: pos.x as u32 - rad,
             width: 2 * rad,
             height: 2 * rad,
-        }
+        };
+        self.dirty_tracker_mut().mark_dirty(rect);
+        rect
     }
 
     fn draw_bezier(
@@ -132,13 +140,15 @@ impl framebuffer::FramebufferDraw for core::Framebuffer {
         samples: i32,
         v: color,
     ) -> mxcfb_rect {
-        graphics::draw_dynamic_bezier(
+        let rect = graphics::draw_dynamic_bezier(
             &mut |p| self.write_pixel(p, v),
             startpt,
             ctrlpt,
             endpt,
             samples,
-        )
+        );
+        self.dirty_tracker_mut().mark_dirty(rect);
+        rect
     }
 
     #[cfg(feature = "framebuffer-text-drawing")]
@@ -204,12 +214,14 @@ impl framebuffer::FramebufferDraw for core::Framebuffer {
         }
 
         // return the height and width of the drawn text so that refresh can be called on it
-        mxcfb_rect {
+        let rect = mxcfb_rect {
             top: min_y,
             left: min_x,
             height: max_y - min_y,
             width: max_x - min_x,
-        }
+        };
+        self.dirty_tracker_mut().mark_dirty(rect);
+        rect
     }
 
     fn draw_rect(&mut self, pos: Point2<i32>, size: Vector2<u32>, border_px: u32, c: color) {
@@ -237,6 +249,13 @@ impl framebuffer::FramebufferDraw for core::Framebuffer {
                 self.write_pixel(Point2::new(xpos, ypos), c);
             }
         }
+        let rect = mxcfb_rect {
+            top: pos.y as u32,
+            left: pos.x as u32,
+            width: size.x,
+            height: size.y,
+        };
+        self.dirty_tracker_mut().mark_dirty(rect);
     }
 
     fn clear(&mut self) {
@@ -249,5 +268,13 @@ impl framebuffer::FramebufferDraw for core::Framebuffer {
                 line_length * h,
             );
         }
+        // Track entire screen as dirty
+        let rect = mxcfb_rect {
+            top: 0,
+            left: 0,
+            width: self.var_screen_info.xres,
+            height: self.var_screen_info.yres,
+        };
+        self.dirty_tracker_mut().mark_dirty(rect);
     }
 }

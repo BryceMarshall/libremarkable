@@ -2,6 +2,16 @@ pub mod common;
 pub mod mxcfb;
 pub mod screeninfo;
 
+// New API modules (v1.0.0)
+pub mod error;
+pub mod coords;
+
+// v1.1.0 API modules
+pub mod dirty_tracking;
+
+#[cfg(feature = "framebuffer-batch")]
+pub mod batch;
+
 #[cfg(feature = "framebuffer-storage")]
 pub mod storage;
 
@@ -11,7 +21,24 @@ pub mod io;
 #[cfg(feature = "framebuffer")]
 pub mod swtfb_client;
 
+#[cfg(feature = "framebuffer")]
+pub mod refresh_builder;
+
 pub use cgmath;
+
+// Re-export new API types for convenience
+pub use error::FramebufferError;
+// Note: error::Result is not re-exported to avoid conflicts with trait signatures
+// Users can access it as framebuffer::error::Result<T> if needed
+pub use coords::{ToDrawCoords, ToRegionCoords, ToDrawVector, ToRegionVector};
+pub use common::RefreshQuality;
+pub use dirty_tracking::DirtyRegionTracker;
+
+#[cfg(feature = "framebuffer-batch")]
+pub use batch::{BatchContext, FramebufferBatchExt};
+
+#[cfg(feature = "framebuffer")]
+pub use refresh_builder::{RefreshBuilder, FramebufferRefreshExt};
 
 pub trait FramebufferIO {
     /// Writes an arbitrary length frame into the framebuffer

@@ -75,3 +75,14 @@ pub mod device;
 pub mod appctx;
 #[cfg(feature = "appctx")]
 pub mod ui_extensions;
+
+// Re-export new API types at crate root for better discoverability
+#[cfg(feature = "framebuffer-types")]
+pub use framebuffer::{
+    error::FramebufferError,
+    coords::{ToDrawCoords, ToRegionCoords, ToDrawVector, ToRegionVector},
+    common::RefreshQuality,
+};
+
+#[cfg(feature = "framebuffer")]
+pub use framebuffer::refresh_builder::FramebufferRefreshExt;
