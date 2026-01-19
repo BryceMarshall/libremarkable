@@ -1209,36 +1209,36 @@ fn main() {
     let clock_thread = std::thread::spawn(move || {
         loop_update_topbar(appref, 30 * 1000);
     });
-
-    app.execute_lua(
-        r#"
-      function draw_box(y, x, height, width, borderpx, bordercolor)
-        local maxy = y+height;
-        local maxx = x+width;
-        for cy=y,maxy,1 do
-          for cx=x,maxx,1 do
-            if (math.abs(cx-x) < borderpx or math.abs(maxx-cx) < borderpx) or
-               (math.abs(cy-y) < borderpx or math.abs(maxy-cy) < borderpx) then
-              fb.set_pixel(cy, cx, bordercolor);
-            end
-          end
-        end
-      end
-
-      top = 430;
-      left = 570;
-      width = 320;
-      height = 90;
-      borderpx = 3;
-      draw_box(top, left, height, width, borderpx, 255);
-
-      -- Draw black text inside the box. Notice the text is bottom aligned.
-      fb.draw_text(top+55, left+22, '...also supports Lua', 30, 255);
-
-      -- Update the drawn rect w/ `deep_plot=false` and `wait_for_update_complete=true`
-      fb.refresh(top, left, height, width, false, true);
-    "#,
-    );
+    //
+    // app.execute_lua(
+    //     r#"
+    //   function draw_box(y, x, height, width, borderpx, bordercolor)
+    //     local maxy = y+height;
+    //     local maxx = x+width;
+    //     for cy=y,maxy,1 do
+    //       for cx=x,maxx,1 do
+    //         if (math.abs(cx-x) < borderpx or math.abs(maxx-cx) < borderpx) or
+    //            (math.abs(cy-y) < borderpx or math.abs(maxy-cy) < borderpx) then
+    //           fb.set_pixel(cy, cx, bordercolor);
+    //         end
+    //       end
+    //     end
+    //   end
+    //
+    //   top = 430;
+    //   left = 570;
+    //   width = 320;
+    //   height = 90;
+    //   borderpx = 3;
+    //   draw_box(top, left, height, width, borderpx, 255);
+    //
+    //   -- Draw black text inside the box. Notice the text is bottom aligned.
+    //   fb.draw_text(top+55, left+22, '...also supports Lua', 30, 255);
+    //
+    //   -- Update the drawn rect w/ `deep_plot=false` and `wait_for_update_complete=true`
+    //   fb.refresh(top, left, height, width, false, true);
+    // "#,
+    // );
 
     info!("Init complete. Beginning event dispatch...");
 

@@ -1,14 +1,16 @@
 {
   "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(grep:*)",
+      "Bash(docker run:*)",
+      "Bash(ls:*)"
+    ],
     "deny": [
       "Read(./target)",
       "Read(./.git)",
       "Read(./.github)",
       "Read(./.idea)"
-    ],
-    "allow": [
-      "Bash(tree:*)",
-      "Bash(grep:*)"
     ]
   }
 }

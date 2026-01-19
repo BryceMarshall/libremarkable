@@ -9,6 +9,9 @@ pub mod coords;
 // v1.1.0 API modules
 pub mod dirty_tracking;
 
+#[cfg(feature = "framebuffer-batch")]
+pub mod batch;
+
 #[cfg(feature = "framebuffer-storage")]
 pub mod storage;
 
@@ -30,6 +33,9 @@ pub use error::FramebufferError;
 pub use coords::{ToDrawCoords, ToRegionCoords, ToDrawVector, ToRegionVector};
 pub use common::RefreshQuality;
 pub use dirty_tracking::DirtyRegionTracker;
+
+#[cfg(feature = "framebuffer-batch")]
+pub use batch::{BatchContext, FramebufferBatchExt};
 
 #[cfg(feature = "framebuffer")]
 pub use refresh_builder::{RefreshBuilder, FramebufferRefreshExt};

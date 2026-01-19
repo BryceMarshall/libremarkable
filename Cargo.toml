@@ -51,6 +51,7 @@ framebuffer-text-drawing = ["framebuffer-drawing", "rusttype"]
 
 # v1.1 State management features
 framebuffer-dirty-tracking = ["framebuffer"]
+framebuffer-batch = ["framebuffer-dirty-tracking"]
 
 input-types = []
 input = ["scan", "input-types", "evdev", "epoll", "fxhash"]
@@ -82,6 +83,21 @@ name = "live"
 path = "examples/live.rs"
 crate-type = ["bin"]
 
+[[example]]
+name = "dirty_tracking_demo"
+path = "examples/dirty_tracking_demo.rs"
+crate-type = ["bin"]
+
+[[example]]
+name = "batch_demo"
+path = "examples/batch_demo.rs"
+crate-type = ["bin"]
+
+[[example]]
+name = "data_collector"
+path = "examples/data_collector.rs"
+crate-type = ["bin"]
+
 [dev-dependencies]
 env_logger = "0.10.0"
 # For spy
@@ -93,3 +109,8 @@ chrono = "0.4.26"
 tiny_http = "0.12.0"
 # For screenshot
 rgb565 = "0.1.3"
+# For data_collector
+ureq = { version = "2.9", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+rand = "0.8"

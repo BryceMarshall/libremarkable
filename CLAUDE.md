@@ -2,11 +2,22 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Active Projects
+
+- refresh-animations: ./projects/refresh-animations.md 
+
 ## Project Overview
 
 libremarkable is a Rust framework for developing applications on the reMarkable Paper Tablet. It provides low-level access to the eInk display (with partial refresh support), multitouch input, Wacom digitizer, and physical buttons. The project is semi-abandoned and needs modernization for production readiness.
 
 **Target Platform**: reMarkable 1 (Gen1) and reMarkable 2 (Gen2) tablets, cross-compiled for `armv7-unknown-linux-gnueabihf` or `armv7-unknown-linux-musleabihf`.
+
+## Device Notes
+
+**User's Device Configuration**:
+- Physical buttons are not available on this specific device
+- All examples should use touch-only controls for user interaction
+- GPIO button handlers can be implemented but will not be testable
 
 ## Build Commands
 

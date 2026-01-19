@@ -48,4 +48,4 @@ RUN cargo install --force --locked bindgen-cli
 # Install useful development tools
 #RUN cargo install cargo-watch cargo-edit cargo-tree || true
 
-WORKDIR /app
+#WORKDIR /app

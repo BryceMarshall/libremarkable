@@ -35,7 +35,7 @@ impl framebuffer::FramebufferDraw for core::Framebuffer {
             width: img.width(),
             height: img.height(),
         };
-        self.dirty_tracker.mark_dirty(rect);
+        self.dirty_tracker_mut().mark_dirty(rect);
         rect
     }
 
@@ -59,7 +59,7 @@ impl framebuffer::FramebufferDraw for core::Framebuffer {
         };
         let margin = (width + 1) / 2;
         let rect = graphics::stamp_along_line(stamp, start, end).expand(margin);
-        self.dirty_tracker.mark_dirty(rect);
+        self.dirty_tracker_mut().mark_dirty(rect);
         rect
     }
 
@@ -88,7 +88,7 @@ impl framebuffer::FramebufferDraw for core::Framebuffer {
             width: 2 * rad,
             height: 2 * rad,
         };
-        self.dirty_tracker.mark_dirty(rect);
+        self.dirty_tracker_mut().mark_dirty(rect);
         rect
     }
 
@@ -110,7 +110,7 @@ impl framebuffer::FramebufferDraw for core::Framebuffer {
             width: 2 * rad,
             height: 2 * rad,
         };
-        self.dirty_tracker.mark_dirty(rect);
+        self.dirty_tracker_mut().mark_dirty(rect);
         rect
     }
 
@@ -147,7 +147,7 @@ impl framebuffer::FramebufferDraw for core::Framebuffer {
             endpt,
             samples,
         );
-        self.dirty_tracker.mark_dirty(rect);
+        self.dirty_tracker_mut().mark_dirty(rect);
         rect
     }
 
@@ -220,7 +220,7 @@ impl framebuffer::FramebufferDraw for core::Framebuffer {
             height: max_y - min_y,
             width: max_x - min_x,
         };
-        self.dirty_tracker.mark_dirty(rect);
+        self.dirty_tracker_mut().mark_dirty(rect);
         rect
     }
 
@@ -255,7 +255,7 @@ impl framebuffer::FramebufferDraw for core::Framebuffer {
             width: size.x,
             height: size.y,
         };
-        self.dirty_tracker.mark_dirty(rect);
+        self.dirty_tracker_mut().mark_dirty(rect);
     }
 
     fn clear(&mut self) {
@@ -275,6 +275,6 @@ impl framebuffer::FramebufferDraw for core::Framebuffer {
             width: self.var_screen_info.xres,
             height: self.var_screen_info.yres,
         };
-        self.dirty_tracker.mark_dirty(rect);
+        self.dirty_tracker_mut().mark_dirty(rect);
     }
 }
